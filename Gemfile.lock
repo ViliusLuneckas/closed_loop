@@ -28,8 +28,8 @@ PLATFORMS
 DEPENDENCIES
   bundler
   closed_loop!
-  rake (~> 13.0)
-  rspec (~> 3.0)
+  rake
+  rspec
 
 BUNDLED WITH
    2.2.15
