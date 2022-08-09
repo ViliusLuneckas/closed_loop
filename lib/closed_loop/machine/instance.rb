@@ -19,7 +19,7 @@ module ClosedLoop
         configuration.transitions.select { |transition| transition.available?(target, user) }
       end
 
-      def transition!(target, user, to:, &block)
+      def transit!(target, user, to:, &block)
         available_transition = available_transitions(target, user).find do |transition|
           transition.from == target.status.to_sym && transition.to == to.to_sym
         end
@@ -28,6 +28,16 @@ module ClosedLoop
           available_transition.perform!(target, user, &block)
         else
           raise("Transition #{self.class} #{target.status}->#{to} for #{target.id} by #{user} not available!")
+        end
+      end
+
+      def transit(target, user, to:, attributes: {}, &block)
+        available_transition = available_transitions(target, user).find do |transition|
+          transition.from == target.status.to_sym && transition.to == to.to_sym
+        end
+
+        if available_transition&.available?(target, user)
+          available_transition.perform(target, user, attributes, &block)
         end
       end
 

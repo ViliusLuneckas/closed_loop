@@ -77,11 +77,11 @@ end
 ```Ruby
 # In controller / service / interactor / background worker
 
-OrderMachine.insantce.transition!(order, current_user, to: :parcel__received)
+OrderMachine.insantce.transit!(order, current_user, to: :parcel__received)
 
 # invoke extra methods in the the same transition & ActiveRecord transaction: 
 
-OrderMachine.insantce.transition!(order, current_user, to: :parcel__received) do
+OrderMachine.insantce.transit!(order, current_user, to: :parcel__received) do
   order.items.each { |item| '#...' }
 end
 

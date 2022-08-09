@@ -37,6 +37,26 @@ module ClosedLoop
 
         @track_times_used = times_used + 1
       end
+
+      def perform(target, user, attributes)
+        target.class.transaction do
+          target.assign_attributes(attributes)
+          target.status             = to
+          target.last_transition_at = Time.current if target.respond_to?(:last_transition_at)
+
+          if target.save
+            proc&.call(target, user, transition: self)
+
+            machine.configuration.select_callbacks_for(self).each do |callback|
+              callback.perform!(target, user, transition: self)
+            end
+
+            yield(target, user, transition: self) if block_given?
+          end
+        end
+
+        @track_times_used = times_used + 1
+      end
     end
   end
 end
