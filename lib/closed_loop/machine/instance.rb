@@ -1,9 +1,13 @@
+require 'forwardable'
+
 module ClosedLoop
   module Machine
     class Instance
+      extend Forwardable
+
       attr_reader :configuration
 
-      delegate :transition, :callback, :constraint, to: :@configuration
+      def_delegators :@configuration, :transition, :callback, :constraint
 
       def initialize
         @configuration = ClosedLoop::Machine::Configuration.new(self)
