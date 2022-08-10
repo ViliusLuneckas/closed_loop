@@ -6,8 +6,8 @@ module ClosedLoop
       end
 
       def available?(target, user)
-        role == machine.resolve_role(target, user) &&
-          target.status.to_sym == from &&
+        Array(role).include?(machine.resolve_role(target, user)) &&
+          Array(from).include?(target.status.to_sym) &&
           none_constraints?(target, user)
       end
 

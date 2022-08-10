@@ -20,25 +20,22 @@ module ClosedLoop
       end
 
       def transit!(target, user, to:, &block)
-        available_transition = available_transitions(target, user).find do |transition|
-          transition.from == target.status.to_sym && transition.to == to.to_sym
-        end
+        transition = find_transition(target, user, to:)
 
-        if available_transition&.available?(target, user)
-          available_transition.perform!(target, user, &block)
-        else
+        unless transition
           raise("Transition #{self.class} #{target.status}->#{to} for #{target.id} by #{user} not available!")
         end
+
+        transition.perform!(target, user, &block)
       end
 
       def transit(target, user, to:, attributes: {}, &block)
-        available_transition = available_transitions(target, user).find do |transition|
-          transition.from == target.status.to_sym && transition.to == to.to_sym
-        end
+        transition = find_transition(target, user, to:)
+        transition&.perform(target, user, attributes, &block)
+      end
 
-        if available_transition&.available?(target, user)
-          available_transition.perform(target, user, attributes, &block)
-        end
+      def find_transition(target, user, to:)
+        available_transitions(target, user).find { |transition| transition.to == to.to_sym }
       end
 
       def resolve_role(*args)
